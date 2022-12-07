@@ -113,26 +113,36 @@ public class Main {
     }
 
     private static void createStadium() {
-        System.out.println("Enter the name of the Stadium: ");
-        String inputTitel = sc.nextLine();
-        System.out.println("Enter the Stadium city: ");
-        String inputForfattare = sc.nextLine();
-        System.out.println("Stadium capacity: ");
-        int inputPris = sc.nextInt();
-        insertStadium(inputTitel, inputForfattare, inputPris);
+        System.out.println("Enter Stadium Id: ");
+        int inputId = sc.nextInt();
+        String xbug = sc.nextLine();
+
+        System.out.println("Enter the name Stadium: ");
+        String inputName = sc.nextLine();
+
+        System.out.println("Enter the city Stadium: ");
+        String inputCity = sc.nextLine();
+
+        System.out.println("Enter stadium capacity: ");
+        int inputCapacity = sc.nextInt();
+        String xybug = sc.nextLine();
+
+        insertStadium(inputId, inputName, inputCity, inputCapacity);
         sc.nextLine();
     }
 
 
-    public static void insertStadium(String stadiumName, String stadiumCity, int stadiumCapacity) {
-        String sql = "INSERT INTO stadiums(stadiumName, stadiumCity, stadiumCapacity) VALUES(?,?,?)";
+    public static void insertStadium( int stadiumId, String stadiumName, String stadiumCity, int stadiumCapacity) {
+        String sql = "INSERT INTO stadiums(stadiumId, stadiumName, stadiumCity, stadiumCapacity) VALUES(?,?,?,?)";
 
         try {
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, stadiumName);
-            pstmt.setString(2, stadiumCity);
-            pstmt.setInt(3, stadiumCapacity);
+            pstmt.setInt(1, stadiumId);
+            pstmt.setString(2, stadiumName);
+            pstmt.setString(3, stadiumCity);
+            pstmt.setInt(4, stadiumCapacity);
+
             pstmt.executeUpdate();
             System.out.println("You have added a new stadium");
         } catch (SQLException e) {
@@ -221,41 +231,3 @@ public class Main {
         }
     }
 }
-
-/*
-
-    private static void createStadium() {
-        System.out.println("Enter Stadium Id: ");
-        int inputId = sc.nextInt();
-
-        System.out.println("Enter the name Stadium: ");
-        String inputName = sc.nextLine();
-
-        System.out.println("Enter the city Stadium: ");
-        String inputCity = sc.nextLine();
-
-        System.out.println("Enter stadium capacity: ");
-        int inputCapacity = sc.nextInt();
-
-        insertStadium(inputId, inputName, inputCity, inputCapacity);
-        sc.nextLine();
-    }
-
-
-    public static void insertStadium( int stadiumId, String stadiumName, String stadiumCity, int stadiumCapacity) {
-        String sql = "INSERT INTO stadiums(stadiumId, stadiumName, stadiumCity, stadiumCapacity) VALUES(?,?,?,?)";
-
-        try {
-            Connection conn = connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, stadiumId);
-            pstmt.setString(2, stadiumName);
-            pstmt.setString(3, stadiumCity);
-            pstmt.setInt(4, stadiumCapacity);
-
-            pstmt.executeUpdate();
-            System.out.println("You have added a new stadium");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }*/
