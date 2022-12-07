@@ -17,14 +17,13 @@ public class Main {
     static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
 
         boolean quit = false;
         printMenu();
 
         while (!quit) {
             System.out.println("\n" +
-                    "Please chose a number from the menu");
+                    "Please chose a number from the menu (Press 7 to se the Menu again)");
             int userchoise = sc.nextInt();
             sc.nextLine();
 
@@ -86,11 +85,10 @@ public class Main {
         System.out.println("0  - Exit\n" +
                 "1  - show all the Stadiums\n" +
                 "2  - Add new Stadium\n" +
-                "3  - Upgrade \n" +
+                "3  - Update \n" +
                 "4  - Delete\n" +
                 "5  - Search Stadium\n" +
-                "6  - Show how many Stadiums\n " +
-                "7  - Menu\n");
+                "6  - Show how many Stadiums\n ");
     }
 
     private static void selectAllStadiums() {
@@ -142,9 +140,9 @@ public class Main {
             pstmt.setString(2, stadiumName);
             pstmt.setString(3, stadiumCity);
             pstmt.setInt(4, stadiumCapacity);
+            System.out.println("You have added a new stadium");
 
             pstmt.executeUpdate();
-            System.out.println("You have added a new stadium");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
