@@ -3,16 +3,28 @@ import java.util.Scanner;
 
 
 public class Main {
+    private static Connection connect() {
+        String url = "jdbc:sqlite:C:\\Users\\arman\\stadiums.db";
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection(url);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return conn;
+    }
+
     static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        selectAllStadiums();
         Scanner sc = new Scanner(System.in);
 
         boolean quit = false;
         printMenu();
 
         while (!quit) {
+            System.out.println("\n" +
+                    "Please chose a number from the menu");
             int userchoise = sc.nextInt();
             sc.nextLine();
 
@@ -25,6 +37,7 @@ public class Main {
 
                 case 1:
                     selectAllStadiums();
+
                     break;
 
                 case 2:
@@ -33,7 +46,19 @@ public class Main {
                     break;
 
                 case 3:
-                    updateStadium();
+                    System.out.println("Enter Stadium name: " );
+                    String inputName = sc.nextLine();
+
+                    System.out.println("Enter Stadium city");
+                    String inputCity = sc.nextLine();
+
+                    System.out.println("Enter Stadium capacity");
+                    int inputCapacity = sc.nextInt();
+
+                    System.out.println("Enter Id number you want to update");
+                    int inputId = sc.nextInt();
+
+                    update(inputName, inputCity, inputCapacity, inputId);
                     break;
 
                 case 4:
@@ -41,39 +66,31 @@ public class Main {
                     break;
 
                 case 5:
-                    System.out.println("you have chose searching stadiums");
+                    searchStadiums();
                     break;
 
                 case 6:
-                    showingHowManyStadiums();
+                    showingStadiums();
                     break;
-
+                case 7:
+                    printMenu();
+                    break;
             }
-        }
+
+      }
+
     }
 
     public static void printMenu() {
         System.out.println("\nMENU:\n");
-        System.out.println("0  - exit\n" +
-                "1  - show all Stadiums\n" +
-                "2  - create new Stadium\n" +
+        System.out.println("0  - Exit\n" +
+                "1  - show all the Stadiums\n" +
+                "2  - Add new Stadium\n" +
                 "3  - Upgrade \n" +
-                "4  - delete\n" +
-                "5  - search Stadium\n" +
-                "6  - show how many Stadiums\n " +
-                "Please, chose a number  ");
-
-    }
-
-    private static Connection connect() {
-        String url = "jdbc:sqlite:C:\\Users\\arman\\stadiums.db";
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(url);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return conn;
+                "4  - Delete\n" +
+                "5  - Search Stadium\n" +
+                "6  - Show how many Stadiums\n " +
+                "7  - Menu\n");
     }
 
     private static void selectAllStadiums() {
@@ -84,7 +101,6 @@ public class Main {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
-            // loop through the result set
             while (rs.next()) {
                 System.out.println(rs.getInt("stadiumId") + "\t" +
                         rs.getString("stadiumName") + "\t" +
@@ -144,70 +160,102 @@ public class Main {
         }
     }
 
-    public static void updateStadium() {
-        System.out.println("chose the stadium Id-number to upgrade: ");
-        int inputId = sc.nextInt();
-        upgrade(inputId);
-        sc.nextLine();
+    public static void update(String stadiumName, String stadiumCity, int stadiumCapacity, int stadiumId) {
 
-    }
+        String sql = "UPDATE stadiums SET stadiumName = ? , "
+                + "stadiumCity = ? , "
+                + "stadiumCapacity = ? "
+                + "WHERE stadiumId = ?";
 
-    public static void upgrade(int id) {
-
-        System.out.println("what do you want to upgrade?");
-        System.out.println("1 - Name?");
-        System.out.println("2 - City ");
-        System.out.println("3 - Capacity");
-        int userupgrade = sc.nextInt();
-        sc.nextLine();
-
-        if (userupgrade == 1) {
-            System.out.println("Enter the new name of the Stadium: ");
-            String updatestadiumName = sc.nextLine();
-
-
-        } else if (userupgrade == 2) {
-            System.out.println("You will upgrade the City");
-
-        } else if (userupgrade == 3) {
-            System.out.println("You will upgrade the Capacity");
-        }
-
-
-      /*  try (Connection conn = connect();
+        try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // set the corresponding param
             pstmt.setString(1, stadiumName);
             pstmt.setString(2, stadiumCity);
             pstmt.setInt(3, stadiumCapacity);
             pstmt.setInt(4, stadiumId);
             // update
             pstmt.executeUpdate();
-            System.out.println("Du har uppdaterat vald bok");
+            System.out.println("You have updated the Stadium");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        }*/
+        }
 
     }
 
-    private static void showingHowManyStadiums() {
+    private static void showingStadiums() {
+        String sql = "SELECT COUNT(*) AS stadiumCount FROM stadiums";
 
-        String sql = "SELECT COUNT(*) FROM stadiums";
         try {
             Connection conn = connect();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
-            // loop through the result set
             while (rs.next()) {
-                System.out.println(rs.getInt("stadiumId") + "\t" +
-                        rs.getString("stadiumName") + "\t" +
-                        rs.getString("stadiumCity") + "\t" +
-                        rs.getString("stadiumCapacity"));
+                System.out.println( "There are a total of " + rs.getInt("stadiumCount") + " stadiums!");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
 
+    private static void searchStadiums(){
+        System.out.println("Enter the Stadium name: ");
+        String sql = "SELECT * FROM stadiums WHERE stadiumName = ? ";
+        try (
+                Connection conn = connect();
+                PreparedStatement pstmt  = conn.prepareStatement(sql)){
+            String inputStadium = sc.nextLine();
+            pstmt.setString(1,inputStadium);
+            ResultSet rs  = pstmt.executeQuery();
 
+            while (rs.next()) {
+                System.out.println(rs.getInt("stadiumId") +  "\t" +
+                        rs.getString("stadiumName") + "\t" +
+                        rs.getString("stadiumCity") + "\t" +
+                        rs.getInt("stadiumCapacity"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
+
+/*
+
+    private static void createStadium() {
+        System.out.println("Enter Stadium Id: ");
+        int inputId = sc.nextInt();
+
+        System.out.println("Enter the name Stadium: ");
+        String inputName = sc.nextLine();
+
+        System.out.println("Enter the city Stadium: ");
+        String inputCity = sc.nextLine();
+
+        System.out.println("Enter stadium capacity: ");
+        int inputCapacity = sc.nextInt();
+
+        insertStadium(inputId, inputName, inputCity, inputCapacity);
+        sc.nextLine();
+    }
+
+
+    public static void insertStadium( int stadiumId, String stadiumName, String stadiumCity, int stadiumCapacity) {
+        String sql = "INSERT INTO stadiums(stadiumId, stadiumName, stadiumCity, stadiumCapacity) VALUES(?,?,?,?)";
+
+        try {
+            Connection conn = connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, stadiumId);
+            pstmt.setString(2, stadiumName);
+            pstmt.setString(3, stadiumCity);
+            pstmt.setInt(4, stadiumCapacity);
+
+            pstmt.executeUpdate();
+            System.out.println("You have added a new stadium");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }*/
